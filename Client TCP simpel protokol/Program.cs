@@ -7,57 +7,44 @@ using System.Xml.Linq;
 using System.Net.Sockets;
 
 
-public class ClientProgram
+public class Program
 {
-    private static StreamReader _reader;
-    private static StreamWriter _writer;
-
-    public static void Main()
+    private static void Main()
     {
-        Console.WriteLine("Connecting to server...");
-        // Connect to the server (adjust the IP and port)
-        TcpClient client = new TcpClient("127.0.0.1", 7);
-        NetworkStream stream = client.GetStream();
-        _reader = new StreamReader(stream);
-        _writer = new StreamWriter(stream);
+        string serverIp = "127.0.0.1"; 
+        int serverPort = 7;
 
-        Console.WriteLine("Connected to server.");
-
-        // Interact with the user
-        while (true)
+        try
         {
-            Console.WriteLine("Enter command (Random, Add, Subtract) or 'exit' to quit:");
-            string command = Console.ReadLine();
-
-            if (command.ToLower() == "exit")
+            using (TcpClient client = new TcpClient(serverIp, serverPort))
+            using (NetworkStream stream = client.GetStream())
+            using (StreamReader reader = new StreamReader(stream))
+            using (StreamWriter writer = new StreamWriter(stream))
             {
-                break;
-            }
+                // Ask the user for the command
+                Console.WriteLine("Enter command (Random, Add, Subtract):");
+                string command = Console.ReadLine();
+                writer.WriteLine(command);
+                writer.Flush(); // Ensure data is sent
 
-            // Send the command to the server
-            _writer.WriteLine(command);
-            _writer.Flush();
+                // Read server's response
+                string response = reader.ReadLine();
+                Console.WriteLine("Server: " + response);
 
-            // Wait for server's response
-            string response = _reader.ReadLine();
-            Console.WriteLine("Server: " + response);
-
-            if (command == "Random" || command == "Add" || command == "Subtract")
-            {
-                Console.WriteLine("Enter two numbers separated by space:");
+                // Ask the user for two numbers
+                Console.WriteLine("Enter two numbers separated by a space:");
                 string numbers = Console.ReadLine();
+                writer.WriteLine(numbers);
+                writer.Flush(); // Ensure data is sent
 
-                // Send the numbers to the server
-                _writer.WriteLine(numbers);
-                _writer.Flush();
-
-                // Wait for result from the server
-                string result = _reader.ReadLine();
-                Console.WriteLine("Result: " + result);
+                // Read and display the result
+                string result = reader.ReadLine();
+                Console.WriteLine("Server result: " + result);
             }
         }
-
-        // Close the connection
-        client.Close();
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error: " + ex.Message);
+        }
     }
 }
