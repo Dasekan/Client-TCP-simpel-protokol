@@ -21,23 +21,22 @@ public class Program
             using (StreamReader reader = new StreamReader(stream))
             using (StreamWriter writer = new StreamWriter(stream))
             {
-                // Ask the user for the command
+                
                 Console.WriteLine("Enter command (Random, Add, Subtract):");
                 string command = Console.ReadLine();
                 writer.WriteLine(command);
-                writer.Flush(); // Ensure data is sent
+                writer.Flush(); 
 
-                // Read server's response
                 string response = reader.ReadLine();
                 Console.WriteLine("Server: " + response);
 
-                // Ask the user for two numbers
+                
                 Console.WriteLine("Enter two numbers separated by a space:");
                 string numbers = Console.ReadLine();
                 writer.WriteLine(numbers);
-                writer.Flush(); // Ensure data is sent
+                writer.Flush(); 
 
-                // Read and display the result
+                
                 string result = reader.ReadLine();
                 Console.WriteLine("Server result: " + result);
             }
